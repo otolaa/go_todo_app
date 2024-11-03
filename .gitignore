@@ -1,0 +1,3 @@
+go_todo_app.mod
+go_todo_app.sum
+/.env
