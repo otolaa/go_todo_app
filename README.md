@@ -1,23 +1,37 @@
-### инициализируем наш GO проект
+## todo list
 
 ```
-$ go mod init go_*
+small - list
 ```
 
-### команда, go mod tidy, добавить отсутствующие и удалить неиспользуемые модули 
+### init GO project
 
 ```
-$ go mod tidy
+go mod init go_*
 ```
 
-### запуск
-```
-# запустить
-$ go run .
+### add module 
 
-# создайте приложение с помощью команды
+```
+go mod tidy
+```
+
+### start
+
+```
+# start
+go run .
+
+# command app project
 go build -o go_*
 
-# посмотреть версию GO
+# version GO
 go version
-``` 
+```
+
+###  debag
+
+```
+killall -9 go
+go run .
+```

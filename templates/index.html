@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>    
+</head>
+<body>
+
+<h1>List</h1>
+
+<ul id="todo_list">
+    <!-- Our todo items will be listed here dynamically -->
+</ul>
+
+<form id="add_todo_form" method="post" action="/add_form">
+    <input type="text" name="task" placeholder="add task" required>
+    <button type="submit">[+]</button>
+</form>
+
+<script type="text/javascript">
+    const $form = document.getElementById("add_todo_form");
+    const $list = document.getElementById("todo_list");
+   
+    const render = (data) => {
+        console.log(data); 
+        
+        let li = document.createElement("li");
+        li.appendChild(document.createTextNode(`${data.ID} - ${data.Task} - ${data.Status}`));
+        li.setAttribute("id", `${data.ID}`);
+        
+        $list.appendChild(li);
+    }
+
+    $form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        
+        let url = this.action;
+        let data = new FormData(this);
+
+        console.log(data);
+
+        fetch(url, {
+            method: 'POST',
+            body: data, /* JSON.stringify(Object.fromEntries(data)) */           
+        })
+        .then(response => response.json())
+        .then(json => render(json))
+        .catch(error => console.error(error))
+
+    });
+</script>
+</body>
+</html>

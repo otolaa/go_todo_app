@@ -1,3 +1,4 @@
-go_todo_app.mod
-go_todo_app.sum
+go.mod
+todo_list.mod
+todo_list.sum
 /.env
