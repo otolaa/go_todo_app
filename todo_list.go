@@ -8,17 +8,6 @@ import (
 	"text/template"
 )
 
-func main() {
-	http.HandleFunc("/", showTodoList)
-	http.HandleFunc("/add_form", addTodoForm)
-
-	log.Println("Server starting on :8080...")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // A Todo represents a task in our todo list
 type Todo struct {
 	ID     int
@@ -30,6 +19,11 @@ type Todo struct {
 var todoList = []Todo{
 	{ID: 1, Task: "Hi, Go", Status: false},
 	{ID: 2, Task: "Im go", Status: false},
+}
+
+type statusBool struct {
+	ID     int  `json:"id"`
+	Status bool `json:"status"`
 }
 
 func showTodoList(w http.ResponseWriter, r *http.Request) {
@@ -70,4 +64,37 @@ func addTodoForm(w http.ResponseWriter, r *http.Request) {
 
 	j, _ := json.Marshal(todoAdd)
 	w.Write(j)
+}
+
+func statusUpdate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields() // catch unwanted fields
+	s := &statusBool{}
+	err := d.Decode(s)
+	if err != nil {
+		// bad JSON or unrecognized json field
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(s.ID, s.Status)
+	j, _ := json.Marshal(s)
+	w.Write(j)
+}
+
+func main() {
+	http.HandleFunc("/", showTodoList)
+	http.HandleFunc("/status_update", statusUpdate)
+	http.HandleFunc("/add_form", addTodoForm)
+
+	log.Println("Server starting on :8080...")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
