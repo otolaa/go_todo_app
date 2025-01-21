@@ -9,7 +9,9 @@
 <h1>List</h1>
 
 <ul id="todo_list">
-    <!-- Our todo items will be listed here dynamically -->
+    {{range . }}
+        <li id="{{ .ID }}">{{ .ID }} - {{ .Task }} - {{ .Status }}</li>
+    {{ end }}
 </ul>
 
 <form id="add_todo_form" method="post" action="/add_form">
