@@ -37,7 +37,6 @@ func showTodoList(w http.ResponseWriter, r *http.Request) {
 }
 
 func addTodoForm(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != "POST" {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 		return
@@ -82,7 +81,10 @@ func statusUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(s.ID, s.Status)
+	// update status
+	todoList[s.ID-1].Status = s.Status
+
+	fmt.Println(s.ID-1, s.Status)
 	j, _ := json.Marshal(s)
 	w.Write(j)
 }

@@ -74,7 +74,11 @@
                 body: JSON.stringify({id:$id, status:$status}),            
             })
             .then(response => response.json())
-            .then(json => { console.log(json) })
+            .then(json => { 
+                console.log(json); 
+                e.target.setAttribute('data-status', json.status);
+                e.target.textContent = json.status; 
+            })
             .catch(error => console.error(error));
 
             return false;
