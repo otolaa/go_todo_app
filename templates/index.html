@@ -10,14 +10,10 @@
 
 <ul id="todo_list">
     {{range . }}
-        <li id="{{ .ID }}">
+        <li id="{{ .ID }}" data-status="{{ .Status}}" data-id="{{ .ID}}">
             {{ .ID }} - {{ .Task }} - 
-            <a href="#" class="status_update" 
-                id="li_{{ .ID }}" 
-                data-status="{{ .Status}}"
-                data-id="{{ .ID}}">
-                {{ .Status }}
-            </a>
+            <a href="#" class="status_update">{{ .Status }}</a>
+            <a href="#" class="delete">&times;</a>
         </li>
     {{ end }}
 </ul>
@@ -31,13 +27,30 @@
     const $form = document.getElementById("add_todo_form");
     const $list = document.getElementById("todo_list");
     const $el = document.querySelectorAll(".status_update");
+    const $el_delete = document.querySelectorAll(".delete");
    
     const render = (data) => {
         console.log(data); 
+
+        let a_link_up = document.createElement("a");
+        a_link_up.innerHTML = `${data.Status}`;
+        a_link_up.setAttribute("class", "status_update");
+        a_link_up.setAttribute("href", "#");
+        addEvent(a_link_up);
+        
+        let a_link_del = document.createElement("a");
+        a_link_del.innerHTML = "&times;";
+        a_link_del.setAttribute("class", "delete");
+        a_link_del.setAttribute("href", "#");
+        deleteEvent(a_link_del);
         
         let li = document.createElement("li");
-        li.appendChild(document.createTextNode(`${data.ID} - ${data.Task} - ${data.Status}`));
+        li.innerHTML = `${data.ID} - ${data.Task} - `;
         li.setAttribute("id", `${data.ID}`);
+        li.setAttribute("data-status", `${data.Status}`);
+        li.setAttribute("data-id", `${data.ID}`);
+        li.appendChild(a_link_up);
+        li.appendChild(a_link_del);
         
         $list.appendChild(li);
     }
@@ -61,13 +74,18 @@
         return false;
     });
 
-    Array.from($el).forEach(link => {
+    Array.from($el).forEach(link => addEvent(link));
+
+    function addEvent(link) {
         link.addEventListener("click", function (e) {
             e.preventDefault();
-            console.log(e.target.id);
+            let $ep = e.target.parentElement;
+            
+            console.log($ep);
+            console.log($ep.getAttribute('data-id'));
 
-            let $id = parseInt(e.target.getAttribute('data-id'));
-            let $status = e.target.getAttribute('data-status') == 'false';
+            let $id = parseInt($ep.getAttribute('data-id'));
+            let $status = $ep.getAttribute('data-status') == 'false';
 
             fetch('/status_update', {
                 method: 'POST',
@@ -76,14 +94,43 @@
             .then(response => response.json())
             .then(json => { 
                 console.log(json); 
-                e.target.setAttribute('data-status', json.status);
+                $ep.setAttribute('data-status', json.status);
                 e.target.textContent = json.status; 
             })
             .catch(error => console.error(error));
 
             return false;
         });
-    });
+    }
+
+    Array.from($el_delete).forEach(link => deleteEvent(link));
+
+    function deleteEvent(link) {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            let $ep = e.target.parentElement;
+            
+            console.log($ep);
+            console.log($ep.getAttribute('data-id'));
+
+            let $id = parseInt($ep.getAttribute('data-id'));
+            let $status = $ep.getAttribute('data-status') == 'false';
+
+            fetch('/detele', {
+                method: 'POST',
+                body: JSON.stringify({id:$id, status:$status}),            
+            })
+            .then(response => response.json())
+            .then(json => { 
+                console.log(json);
+                $ep.remove();
+            })
+            .catch(error => console.error(error));
+
+            return false;
+        });
+    }
+    
 </script>
 </body>
 </html>
